@@ -1,10 +1,10 @@
 ﻿using System;
 
-namespace trackrequests
+namespace TrackRequests
 {
-    class Track
+    public class Track
     {
-        internal Track(
+        public Track(
             int dimensions,
             int timeColumns,
             Func<DateTime, DateTime, bool> areSameTimeFunc,
@@ -17,7 +17,7 @@ namespace trackrequests
             mUnitsBetweenFunc = unitsBetweenFunc;
         }
 
-        internal void Operation(
+        public void Operation(
             DateTime now,
             int operation,
             int amount)
@@ -34,7 +34,7 @@ namespace trackrequests
             return mTotals;
         }*/
 
-        internal int GetTotal(DateTime now)
+        public int GetTotal(DateTime now)
         {
             ChangeToDifferentTime(now);
 
