@@ -103,7 +103,6 @@ namespace trackrequests
                     return (int)Math.Round((two - one).TotalMinutes);
                 });
 
-
             DateTime start = new DateTime(2020, 04, 24, 16, 00, 00);
 
             TrackOp(opsLastMinute, opsLastHour, start.AddSeconds(1), 120, 5);
