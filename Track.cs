@@ -22,37 +22,80 @@ namespace TrackRequests
             int operation,
             int amount)
         {
-            ChangeToDifferentTime(now);
+            lock (this)
+            {
+                ChangeToDifferentTime(now);
 
-            mPrevTime = now;
-            mTrack[operation, mColumn] += amount;
-            mTotals[operation] += amount;
+                mTrack[operation, mColumn] += amount;
+                mTotals[operation] += amount;
+            }
         }
 
-        /*internal int[] GetTotals()
+        internal int[] GetTotals(DateTime now)
         {
-            return mTotals;
-        }*/
+            lock (this)
+            {
+                ChangeToDifferentTime(now);
+
+                int[] result = new int[mTotals.Length];
+
+                Array.Copy(mTotals, result, mTotals.Length);
+
+                return result;
+            }
+        }
 
         public int GetTotal(DateTime now)
         {
-            ChangeToDifferentTime(now);
+            lock (this)
+            {
+                ChangeToDifferentTime(now);
 
-            mPrevTime = now;
+                int result = 0;
+                for (int i = 0; i < mTotals.Length; ++i)
+                    result += mTotals[i];
 
-            int result = 0;
-            for (int i = 0; i < mTotals.Length; ++i)
-                result += mTotals[i];
+                return result;
+            }
+        }
 
-            return result;
+        public int GetMax(DateTime now)
+        {
+            lock (this)
+            {
+                ChangeToDifferentTime(now);
+
+                int result = 0;
+
+                for (int column = 0; column < mTrack.GetLength(1); ++column)
+                {
+                    int total = 0;
+
+                    for (int row = 0; row < mTrack.GetLength(0); ++row)
+                    {
+                        total += mTrack[row, column];
+                    }
+
+                    result = Math.Max(result, total);
+                }
+
+                return result;
+            }
         }
 
         void ChangeToDifferentTime(DateTime now)
         {
-            if (mPrevTime == DateTime.MinValue || mAreSameTimeFunc(mPrevTime, now))
+            if (mPrevTime == DateTime.MinValue)
+            {
+                mPrevTime = now;
+                return;
+            }
+
+            if (mAreSameTimeFunc(mPrevTime, now))
                 return;
 
             int unitsBetween = mUnitsBetweenFunc(mPrevTime, now);
+            mPrevTime = now;
 
             if (unitsBetween > mTrack.GetLength(1))
             {
@@ -84,6 +127,9 @@ namespace TrackRequests
                     for (int i = 0; i < mTrack.GetLength(0); ++i)
                     {
                         mTotals[i] -= mTrack[i, mColumn];
+
+                        if (mTotals[i] < 0)
+                            mTotals[i] = 0;
 
                         mTrack[i, mColumn] = 0;
                     }

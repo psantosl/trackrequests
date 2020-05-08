@@ -7,17 +7,6 @@ namespace TrackRequestsTests
     [TestFixture]
     public class TrackTests
     {
-        [SetUp]
-        public void Setup()
-        {
-        }
-
-        [Test]
-        public void Test1()
-        {
-            Assert.Pass();
-        }
-        
         [Test]
         public void TestMinutes()
         {
@@ -75,9 +64,8 @@ namespace TrackRequestsTests
 
             Assert.AreEqual(2, opsLast5Seconds.GetTotal(start.AddSeconds(201)));
         }
-    }
-    
-    [Test]
+
+        [Test]
         public void TestMinutesAndHours()
         {
             Track opsLastMinute = new Track(
